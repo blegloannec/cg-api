@@ -44,9 +44,18 @@ class CG:
         data = json.dumps([mode]).encode()
         return self._call('Contribution/getAcceptedContributions', data)
 
+    def search(self, query):
+        data = json.dumps([query, 'en', 'props.type']).encode()
+        return self._call('search/search', data)
+
+    def findCodingamePointsStatsByHandle(self, cghandle):
+        data = json.dumps([cghandle]).encode()
+        return self._call('CodinGamer/findCodingamePointsStatsByHandle', data)
+
 
 if __name__=='__main__':
-    session = ''  # session cookie
-    cgid    = 0   # cg user id
+    session = None  # session cookie
     api = CG(session)
+    handle = api.search('Niako')[0]['id']
+    cgid = int(api.findCodingamePointsStatsByHandle(handle)['codingamer']['userId'])
     print(api.findAllMinimalProgress(cgid))
