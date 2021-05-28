@@ -3,6 +3,7 @@
 import sys, json
 import requests
 
+
 class CG:
     def __init__(self, cgsession=None):
         self.url = 'https://www.codingame.com/services/'
@@ -35,8 +36,8 @@ class CG:
         data = json.dumps([]).encode()
         return self._call('Puzzle/findPuzzleOfTheWeek', data)
 
-    def findContribution(self, cgid: int):
-        data = json.dumps([cgid, True]).encode()
+    def findContribution(self, handle: str):
+        data = json.dumps([handle, True]).encode()
         return self._call('Contribution/findContribution', data)
 
     def getAcceptedContributions(self, mode='ALL'):
@@ -44,18 +45,30 @@ class CG:
         data = json.dumps([mode]).encode()
         return self._call('Contribution/getAcceptedContributions', data)
 
-    def search(self, query):
+    def search(self, query: str):
         data = json.dumps([query, 'en', 'props.type']).encode()
         return self._call('search/search', data)
 
-    def findCodingamePointsStatsByHandle(self, cghandle):
+    def findCodingamePointsStatsByHandle(self, cghandle: str):
         data = json.dumps([cghandle]).encode()
         return self._call('CodinGamer/findCodingamePointsStatsByHandle', data)
 
+    def findProgressByIds(self, puzzids, cgid: int):
+        data = json.dumps([puzzids, cgid, 2]).encode()
+        return self._call('Puzzle/findProgressByIds', data)
+
+    def findProgressByPrettyId(self, puzzname: str, cgid: int):
+        data = json.dumps([puzzname, cgid]).encode()
+        return self._call('Puzzle/findProgressByPrettyId', data)
+
 
 if __name__=='__main__':
-    session = None  # session cookie
+    session = ''  # session cookie
     api = CG(session)
-    handle = api.search('Niako')[0]['id']
-    cgid = int(api.findCodingamePointsStatsByHandle(handle)['codingamer']['userId'])
-    print(api.findAllMinimalProgress(cgid))
+    #handle = api.search('Niako')[0]['id']
+    #cgid = int(api.findCodingamePointsStatsByHandle(handle)['codingamer']['userId'])
+    cgid = 1569823
+    puzzids = [puzz['id'] for puzz in api.findAllMinimalProgress(cgid)]
+    puzzles = api.findProgressByIds(puzzids, cgid)
+    for puzz in puzzles:
+        print(puzz['id'], puzz['prettyId'])
